@@ -109,6 +109,7 @@ class Player implements Runnable {
     public void sendData() {
         send.clear();
         send.put("totalPlayers", totalPlayers);
+        send.put("playerID", idNum);
         JSONArray players = new JSONArray();
         for (Player tPlayer : GameServer.playerList) {
             if (!tPlayer.equals(this)) {

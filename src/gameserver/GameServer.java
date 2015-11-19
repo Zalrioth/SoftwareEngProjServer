@@ -20,7 +20,7 @@ public class GameServer {
         int idNum = 0;
 
         Logic logicLoop = new Logic();
-        
+
         Thread logic = new Thread(logicLoop);
         logic.start();
 

@@ -10,7 +10,7 @@ public class Enemy {
 
     protected boolean wasHit;
     protected boolean isAlive;
-    
+
     public int countDown = 120;
 
     Enemy(int x, int y) {
@@ -43,14 +43,12 @@ public class Enemy {
     public int getID() {
         return idNum;
     }
-    
-    public boolean wasHit()
-    {
+
+    public boolean wasHit() {
         return wasHit;
     }
-    
-    public void setHit(boolean wasHit)
-    {
+
+    public void setHit(boolean wasHit) {
         this.wasHit = wasHit;
     }
 
