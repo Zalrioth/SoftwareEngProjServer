@@ -15,8 +15,6 @@ import org.json.simple.parser.ParseException;
 
 class Player implements Runnable {
 
-    private static int totalPlayers;
-
     private Socket server;
     private String line, input;
     private PrintWriter output;
@@ -26,6 +24,8 @@ class Player implements Runnable {
     private int idNum;
     private long xPos;
     private long yPos;
+    
+    private boolean shouldQuit = false;
 
     Player(Socket server, int idNum) {
         this.server = server;
@@ -38,13 +38,13 @@ class Player implements Runnable {
         send = new JSONObject();
         recieve = new JSONObject();
         input = "";
-        totalPlayers++;
+        GameServer.totalPlayers++;
     }
 
     public void run() {
         try {
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(server.getInputStream()));
-            while ((input = bufferedReader.readLine()) != null) {
+            while ((input = bufferedReader.readLine()) != null && shouldQuit == false) {
                 recieveData(input);
                 sendData();
             }
@@ -52,7 +52,7 @@ class Player implements Runnable {
             server.close();
         } catch (IOException ioe) {
             System.out.println("Player " + idNum + " Quit");
-            totalPlayers--;
+            GameServer.totalPlayers--;
             GameServer.playerList.remove(this);
         }
     }
@@ -63,6 +63,15 @@ class Player implements Runnable {
             recieve = (JSONObject) parser.parse(input);
         } catch (ParseException ex) {
         }
+        
+        if ((Boolean) recieve.get("status").equals("quit"))
+        {
+            System.out.println("Player " + idNum + " Quit");
+            GameServer.totalPlayers--;
+            GameServer.playerList.remove(this);
+            shouldQuit = true;
+        }
+        
         xPos = ((Long) recieve.get("xPos")).intValue();
         yPos = ((Long) recieve.get("yPos")).intValue();
 
@@ -108,7 +117,7 @@ class Player implements Runnable {
 
     public void sendData() {
         send.clear();
-        send.put("totalPlayers", totalPlayers);
+        send.put("totalPlayers", GameServer.totalPlayers);
         send.put("playerID", idNum);
         JSONArray players = new JSONArray();
         for (Player tPlayer : GameServer.playerList) {
